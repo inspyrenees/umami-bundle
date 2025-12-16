@@ -10,8 +10,9 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('umami');
+        $rootNode = $treeBuilder->getRootNode();
 
-        $treeBuilder->getRootNode()
+        $rootNode
             ->children()
             ->scalarNode('url')
             ->isRequired()
@@ -38,8 +39,7 @@ class Configuration implements ConfigurationInterface
             ->min(1)
             ->info('Default number of days to retrieve metrics for')
             ->end()
-            ->end()
-        ;
+            ->end();
 
         return $treeBuilder;
     }
