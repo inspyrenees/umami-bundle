@@ -1,0 +1,37 @@
+{
+  "name": "inspyrenees/umami-bundle",
+  "description": "Symfony bundle for Umami Analytics API integration",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "keywords": ["symfony", "bundle", "umami", "analytics", "metrics"],
+  "authors": [
+    {
+      "name": "Votre Nom",
+      "email": "votre.email@example.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "symfony/config": "^7.0|^8.0",
+    "symfony/dependency-injection": "^7.0|^8.0",
+    "symfony/http-client": "^7.0|^8.0",
+    "symfony/http-kernel": "^7.0|^8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "symfony/phpunit-bridge": "^7.0|^8.0",
+    "symfony/var-dumper": "^7.0|^8.0",
+    "symfony/test-pack": "^1.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Inspyrenees\\UmamiBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Inspyrenees\\UmamiBundle\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "stable"
+}
