@@ -1,7 +1,7 @@
 # Umami Bundle for Symfony
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/inspyrenees/phpgpxparser.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
-[![Packagist downloads](https://img.shields.io/packagist/dm/inspyrenees/phpgpxparser.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
+[![Latest Stable Version](https://img.shields.io/packagist/v/inspyrenees/umami-bundle.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
+[![Packagist downloads](https://img.shields.io/packagist/dm/inspyrenees/umami-bundle.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-blue.svg)](https://php.net)
 [![Symfony Version](https://img.shields.io/badge/symfony-%5E7.0%7C%5E8.0-blue.svg)](https://symfony.com)
