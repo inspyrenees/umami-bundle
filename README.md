@@ -1,8 +1,10 @@
 # Umami Bundle for Symfony
 
+[![Latest Stable Version](https://img.shields.io/packagist/v/inspyrenees/phpgpxparser.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
+[![Packagist downloads](https://img.shields.io/packagist/dm/inspyrenees/phpgpxparser.svg)](https://packagist.org/packages/inspyrenees/umami-bundle)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.1-blue.svg)](https://php.net)
-[![Symfony Version](https://img.shields.io/badge/symfony-%5E6.0%7C%5E7.0-blue.svg)](https://symfony.com)
+[![Symfony Version](https://img.shields.io/badge/symfony-%5E7.0%7C%5E8.0-blue.svg)](https://symfony.com)
 
 A Symfony bundle for integrating with [Umami Analytics](https://umami.is/) API. This bundle provides a simple and elegant way to fetch analytics data from your Umami instance.
 
@@ -10,15 +12,14 @@ A Symfony bundle for integrating with [Umami Analytics](https://umami.is/) API. 
 
 - 🔐 Automatic authentication with Umami API
 - 📊 Complete API coverage (metrics, stats, page views, etc.)
-- ⚙️ Simple configuration via Symfony config files
+- ⚙️ Simple configuration via environment variables
 - 🎯 Type-safe and well-documented methods
 - 🔄 Token caching to minimize authentication requests
-- 🧪 Fully testable
 
 ## Requirements
 
 - PHP 8.1 or higher
-- Symfony 7.0/8.0
+- Symfony 7.0 or 8.0
 - Umami Analytics instance with API access
 
 ## Installation
@@ -42,18 +43,9 @@ return [
 
 ## Configuration
 
-Create a configuration file `config/packages/umami.yaml`:
+### Simple Setup (Recommended)
 
-```yaml
-umami:
-    url: '%env(UMAMI_URL)%'
-    username: '%env(UMAMI_USERNAME)%'
-    password: '%env(UMAMI_PASSWORD)%'
-    website_id: '%env(UMAMI_WEBSITE_ID)%'
-    default_days_back: 30  # Optional, default: 30
-```
-
-Add your Umami credentials to your `.env` file:
+Add your Umami credentials directly to your `.env` file:
 
 ```env
 UMAMI_URL=https://analytics.example.com
@@ -62,11 +54,26 @@ UMAMI_PASSWORD=your_password
 UMAMI_WEBSITE_ID=your-website-id
 ```
 
+That's it! The bundle will automatically use these environment variables.
+
+### Advanced Configuration (Optional)
+
+If you need to customize settings or override environment variables, create `config/packages/umami.yaml`:
+
+```yaml
+umami:
+    url: 'https://custom-analytics.example.com'  # Override UMAMI_URL
+    username: '%env(UMAMI_USERNAME)%'
+    password: '%env(UMAMI_PASSWORD)%'
+    website_id: '%env(UMAMI_WEBSITE_ID)%'
+    default_days_back: 90  # Change default from 30 to 90 days
+```
+
 ## Usage
 
 ### Basic Usage
 
-Inject the `UmamiApiClient` service into your controller or service:
+Inject the `UmamiClientInterface` into your controller or service:
 
 ```php
 <?php
@@ -75,17 +82,17 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Inspyrenees\UmamiBundle\Client\UmamiApiClient;
+use Inspyrenees\UmamiBundle\Client\UmamiClientInterface;
 
 class AnalyticsController extends AbstractController
 {
     public function __construct(
-        private readonly UmamiApiClient $umamiClient
+        private readonly UmamiClientInterface $umamiClient
     ) {}
 
     public function dashboard(): Response
     {
-        // Get page metrics for the last 30 days
+        // Get page metrics for the last 30 days (default)
         $metrics = $this->umamiClient->getPageMetrics();
         
         // Get overall stats
@@ -114,7 +121,19 @@ $metrics = $this->umamiClient->getPageMetrics(7);
 #### Get Website Statistics
 
 ```php
+// Get overall statistics
 $stats = $this->umamiClient->getStats(30);
+```
+
+Returns:
+```json
+{
+  "pageviews": 5000,
+  "visitors": 2000,
+  "visits": 2500,
+  "bounces": 500,
+  "totaltime": 150000
+}
 ```
 
 #### Get Metrics by Type
@@ -139,19 +158,30 @@ $countries = $this->umamiClient->getCountries(30);
 $events = $this->umamiClient->getEvents(30);
 ```
 
+Example response format:
+```json
+[
+    { "x": "/home", "y": 1523 },
+    { "x": "/about", "y": 456 }
+]
+```
+
 #### Get Page Views Over Time
 
 ```php
 // Get daily page views for the last 30 days
 $pageViews = $this->umamiClient->getPageViews('day', 'Europe/Paris', 30);
 
-// Available units: 'year', 'month', 'day', 'hour'
+// Get hourly views for the last 7 days
 $hourlyViews = $this->umamiClient->getPageViews('hour', 'UTC', 7);
 ```
+
+Available units: `year`, `month`, `day`, `hour`
 
 #### Get Active Users (Real-time)
 
 ```php
+// Get currently active users on your site
 $activeUsers = $this->umamiClient->getActiveUsers();
 ```
 
@@ -159,9 +189,11 @@ $activeUsers = $this->umamiClient->getActiveUsers();
 
 #### Custom Metrics Query
 
+You can query any metric type supported by Umami:
+
 ```php
-// Get metrics by custom type
-$customMetrics = $this->umamiClient->getMetricsByType('path', 15);
+// Available types: url, referrer, browser, os, device, country, event
+$customMetrics = $this->umamiClient->getMetricsByType('url', 15);
 ```
 
 #### Clear Authentication Token
@@ -172,41 +204,6 @@ If you need to force re-authentication (e.g., after credential changes):
 $this->umamiClient->clearToken();
 ```
 
-## Example Response Formats
-
-### Page Metrics Response
-
-```json
-[
-    {
-        "x": "/home",
-        "y": 1523
-    },
-    {
-        "x": "/about",
-        "y": 456
-    }
-]
-```
-
-### Stats Response
-
-```json
-{
-  "pageviews": 2,
-  "visitors": 2,
-  "visits": 2,
-  "bounces": 2,
-  "totaltime": 0,
-  "comparison": {
-    "pageviews": 0,
-    "visitors": 0,
-    "visits": 0,
-    "bounces": 0,
-    "totaltime": 0
-  }
-}
-```
 
 ## Contributing
 
@@ -221,7 +218,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This bundle is released under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Support
-
-If you have any questions or issues, please open an issue on GitHub.

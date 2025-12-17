@@ -1,18 +1,40 @@
 name: CI
 
-on: [push, pull_request]
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
 
 jobs:
     tests:
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                php: ['8.1', '8.2', '8.3']
+                symfony: ['7.0', '8.0']
+                exclude:
+                    - php: '8.1'
+                      symfony: '8.0'
+
+        name: PHP ${{ matrix.php }} - Symfony ${{ matrix.symfony }}
+
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-            - uses: shivammathur/setup-php@v2
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
               with:
-                  php-version: '8.2'
+                  php-version: ${{ matrix.php }}
+                  extensions: mbstring, xml, ctype, iconv, intl
+                  coverage: none
 
-            - run: composer install --prefer-dist --no-progress
+            - name: Install dependencies
+              run: |
+                  composer require "symfony/framework-bundle:^${{ matrix.symfony }}" --no-update --no-interaction
+                  composer install --prefer-dist --no-progress --no-interaction
 
-            - run: vendor/bin/phpunit
+            - name: Run tests
+              run: vendor/bin/phpunit

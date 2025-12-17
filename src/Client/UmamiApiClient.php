@@ -81,7 +81,7 @@ class UmamiApiClient implements UmamiClientInterface
         [$startAt, $endAt] = $this->timeRangeResolver->resolve($daysBack);
 
         return $this->get(
-            sprintf('/api/websites/%s/metrics', $this->websiteId),
+            sprintf('%s/api/websites/%s/metrics',$this->umamiUrl, $this->websiteId),
             [
                 'startAt' => $startAt,
                 'endAt' => $endAt,
