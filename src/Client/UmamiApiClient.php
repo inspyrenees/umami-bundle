@@ -75,17 +75,17 @@ class UmamiApiClient implements UmamiClientInterface
      * @param int|null $daysBack Number of days to look back (default: configured value or 30)
      * @return array<string, mixed>
      */
-    public function getPageMetrics(?int $daysBack = null): array
+    public function getPageMetrics(?int $daysBack = null, string $type = 'path'): array
     {
         $daysBack ??= $this->defaultDaysBack;
         [$startAt, $endAt] = $this->timeRangeResolver->resolve($daysBack);
 
         return $this->get(
-            sprintf('%s/api/websites/%s/metrics',$this->umamiUrl, $this->websiteId),
+            sprintf('/api/websites/%s/metrics', $this->websiteId),
             [
                 'startAt' => $startAt,
                 'endAt' => $endAt,
-                'type' => 'url',
+                'type' => $type,
             ]
         );
     }
@@ -103,7 +103,7 @@ class UmamiApiClient implements UmamiClientInterface
         [$startAt, $endAt] = $this->timeRangeResolver->resolve($daysBack);
 
         return $this->get(
-            sprintf('%s/api/websites/%s/stats', $this->umamiUrl, $this->websiteId),
+            sprintf('/api/websites/%s/stats', $this->websiteId),
             [
                 'startAt' => $startAt,
                 'endAt' => $endAt,
@@ -125,7 +125,7 @@ class UmamiApiClient implements UmamiClientInterface
         [$startAt, $endAt] = $this->timeRangeResolver->resolve($daysBack);
 
         return $this->get(
-            sprintf('%s/api/websites/%s/metrics', $this->umamiUrl, $this->websiteId),
+            sprintf('/api/websites/%s/metrics', $this->websiteId),
             [
                 'startAt' => $startAt,
                 'endAt' => $endAt,
@@ -199,7 +199,7 @@ class UmamiApiClient implements UmamiClientInterface
         [$startAt, $endAt] = $this->timeRangeResolver->resolve($daysBack);
 
         return $this->get(
-            sprintf('%s/api/websites/%s/pageviews', $this->umamiUrl, $this->websiteId),
+            sprintf('/api/websites/%s/pageviews', $this->websiteId),
             [
                 'startAt' => $startAt,
                 'endAt' => $endAt,
@@ -218,7 +218,7 @@ class UmamiApiClient implements UmamiClientInterface
     public function getActiveUsers(): array
     {
         return $this->get(
-            sprintf('%s/api/websites/%s/active', $this->umamiUrl, $this->websiteId),
+            sprintf('/api/websites/%s/active', $this->websiteId),
         );
     }
 
